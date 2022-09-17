@@ -1,18 +1,9 @@
-package com.sportsworld.learnsharedflow
+package com.sportsworld.sportcomponentlib
+
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
 class ContentRepository {
 
-    val latestSport: Flow<List<Sport>> = flow {
-        while(true){
-            val latestSport = getFeaturedSports().shuffled()
-            emit(latestSport)
-            delay(1000)
-        }
-
-    }
 
     suspend fun getFeaturedSports(): List<Sport> {
         delay(5000)

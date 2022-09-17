@@ -24,13 +24,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Scaffold(
-                        //This will be in other apps
-                        topBar = {topBar()},
-                        // This will be supplied by the SportsFeature library - once I refactor to create one..
-                        content = {DisplayScreenSetup()}
-                    )
 
+                    ShellAppScaffold()
                     }
 
                 }
@@ -38,13 +33,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-@Composable
-fun topBar() {
-    TopAppBar(title = {
-        Text(
-            text = "Featured Sport",
-            style = MaterialTheme.typography.h6,
-        )
-    })
-}
 
+@Composable
+fun ShellAppScaffold() {
+    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = { TopAppBar(title = {Text("Featured Sport")},backgroundColor = MaterialTheme.colors.primary)  },
+        content = { DisplayScreenSetup()},
+    )
+}

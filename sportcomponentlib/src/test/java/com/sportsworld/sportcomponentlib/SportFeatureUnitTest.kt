@@ -10,7 +10,6 @@ import org.junit.Before
 import org.junit.Rule
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class SportFeatureUnitTest {
 
     @ExperimentalCoroutinesApi
@@ -26,29 +25,20 @@ class SportFeatureUnitTest {
 
     @Test
     fun `check list of sports has been randomised`() = runTest {
-        viewModel.sharedFlowInit()
-        val firstShuffle = viewModel.latestSport
+        viewModel.loadNews()
+        val firstShuffle = viewModel.uiState.value
         advanceUntilIdle()
-        viewModel.sharedFlowInit()
-        val secondShuffle = viewModel.latestSport
+        viewModel.loadNews()
+        val secondShuffle = viewModel.uiState
         advanceUntilIdle()
         assertNotEquals(firstShuffle, secondShuffle)
     }
 
-
-    @Test
-    fun `check default list of sports is one Sport object`() = runTest {
-        val prevUnsuffledListOfSports = viewModel.latestSport
-        viewModel.sharedFlowInit()
-        advanceUntilIdle()
-        assertEquals(prevUnsuffledListOfSports.size, 1)
-    }
-
     @Test
     fun `check list gets populated with 9 objects after sharedFlowInit() called`() = runTest {
-        viewModel.sharedFlowInit()
+        viewModel.loadNews()
         advanceUntilIdle()
-        val postShuffledListOfSports = viewModel.latestSport
+        val postShuffledListOfSports = viewModel.uiState.value
         assertEquals(postShuffledListOfSports.size, 9)
     }
 

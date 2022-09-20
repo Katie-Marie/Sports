@@ -3,10 +3,9 @@ package com.sportsworld.sportcomponentlib
 import kotlinx.coroutines.delay
 
 class ContentRepository {
-
-
     suspend fun getFeaturedSports(): List<Sport> {
-        delay(5000)
+        // Was orginally 5000. How to make the callback function on the Refresh button more performant without reducing this time?
+        delay(1000)
         return Sport.createMockedSports()
     }
 }

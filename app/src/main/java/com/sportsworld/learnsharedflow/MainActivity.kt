@@ -11,7 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.*
 import com.sportsworld.sportcomponentlib.DisplayScreenSetup
-
+import com.sportsworld.sportcomponentlib.SportFeatureViewModelLib
 
 
 class MainActivity : ComponentActivity() {

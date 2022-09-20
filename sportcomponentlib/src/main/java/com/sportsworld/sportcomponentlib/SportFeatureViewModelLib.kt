@@ -14,7 +14,7 @@ class SportFeatureViewModelLib() : ViewModel() {
     val uiState: StateFlow<List<Sport>> = _uiState
 
     init {
-        // allow us to populate the composable intially
+        // allow us to populate the composable initially
         loadNews()
     }
 

@@ -1,21 +1,19 @@
 package com.sportsworld.sportcomponentlib
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.tooling.preview.Preview
-import com.sportsworld.sportcomponentlib.ui.theme.SportsComponentLib
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sportsworld.sportcomponentlib.ui.icons.RefreshIcon
+import com.sportsworld.sportcomponentlib.ui.theme.SportsComponentLib
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -30,46 +28,72 @@ fun TopBarLib() {
 
 @Composable
 fun DisplayScreenSetup(viewModel: SportFeatureViewModelLib = viewModel()) {
-    MainScreen(viewModel.sharedFlow)
+    MainScreen(viewModel)
 }
 
 @Composable
-//Todo: read up on side effects in JetPack Compose with coroutines - would not put this code into production until I understood these ideas better
-fun MainScreen(sharedFlow: SharedFlow<List<Sport>>) {
+fun RefreshButtonLib(viewModel: SportFeatureViewModelLib = viewModel()) {
+    val scope = rememberCoroutineScope()
+    // In practice would pull the last sport displayed from Shared Prefs.
+    var currentSport = Sport.createMockedSports()[0]
 
-    val messages = remember { mutableStateListOf<List<Sport>>() }
+    val getNewSportOnClick: () -> Unit = {
+        scope.launch {
+            try {
 
-    LaunchedEffect(key1 = Unit) {
-        sharedFlow.collect {
-            messages.add(0, it)
-            // Todo: Learn more about recomposition so I can find a better way to achieve this
-            messages.removeRange(1,messages.size)
+                // try and collect the value from the flow and then print it out
+                viewModel.loadNewSports()
+
+                val listOfSports = viewModel.uiState.value
+
+                Log.d("katie", currentSport.name) // testing current sport is getting updated
+                // Don't want to display same sport twice in a row
+                if (currentSport == listOfSports[0])
+                    currentSport = listOfSports[1]
+                else
+                    currentSport = listOfSports[0]
+
+            } catch (ex: Exception) {
+                println("Coroutine to get current list of sports cancelled")
+            }
         }
     }
-    LazyColumn {
-        items(messages) {
-            val sport = it[0].name
-            val description = it[0].description
-            Column {
-                Text(
-                    text = sport,
-                    style = MaterialTheme.typography.h3,
-                )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.h5,
-                )
-            }
 
+    RefreshIcon(onClick = getNewSportOnClick) {}
+}
+
+@Composable
+fun MainScreen(viewModel: SportFeatureViewModelLib = viewModel()) {
+    AtNewUIstate(viewModel)
+}
+
+@Composable
+fun AtNewUIstate(viewModel: SportFeatureViewModelLib = viewModel()) {
+    val state = viewModel.uiState.collectAsState()
+    val stateValue = state.value
+
+    if (stateValue.isEmpty()) {
+        Text("New Sport Feature is Loading...")
+    } else {
+        Column {
+            Text(
+                text = stateValue[0].name,
+                style = MaterialTheme.typography.h3,
+            )
+            Text(
+                text = stateValue[0].description,
+                style = MaterialTheme.typography.h5,
+            )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    SportsComponentLib() {
+    SportsComponentLib {
         val viewModel: SportFeatureViewModelLib = viewModel()
-        MainScreen(viewModel.sharedFlow)
+        MainScreen(viewModel)
     }
 }

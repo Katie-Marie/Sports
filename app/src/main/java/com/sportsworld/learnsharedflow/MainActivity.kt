@@ -11,7 +11,10 @@ import androidx.compose.runtime.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.*
 import com.sportsworld.sportcomponentlib.DisplayScreenSetup
-
+import com.sportsworld.sportcomponentlib.RefreshButtonLib
+import com.sportsworld.sportcomponentlib.SportFeatureViewModelLib
+import com.sportsworld.sportcomponentlib.RefreshButtonLib
+import com.sportsworld.sportcomponentlib.ui.icons.RefreshIcon
 
 
 class MainActivity : ComponentActivity() {
@@ -39,7 +42,23 @@ fun ShellAppScaffold() {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { TopAppBar(title = {Text("Featured Sport")},backgroundColor = MaterialTheme.colors.primary)  },
+        topBar = {RefreshBar( )},
         content = { DisplayScreenSetup()},
     )
 }
+
+@Composable
+fun RefreshBar() {
+        TopAppBar(
+            title = {
+                Text("Featured Sport")
+            },
+            actions = {
+                RefreshButtonLib()
+            },
+            backgroundColor = MaterialTheme.colors.primary
+        )
+
+}
+
+

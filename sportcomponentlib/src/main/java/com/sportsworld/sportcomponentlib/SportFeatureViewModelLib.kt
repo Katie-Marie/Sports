@@ -2,29 +2,28 @@ package com.sportsworld.sportcomponentlib
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class SportFeatureViewModelLib() : ViewModel() {
+class SportFeatureViewModelLib : ViewModel() {
     val sportRepository by lazy { ContentRepository() }
-    var latestSport = listOf(Sport("", ""))
 
-    private val _sharedFlow = MutableStateFlow<List<Sport>>(latestSport)
-    val sharedFlow = _sharedFlow.asSharedFlow()
+    // Backing property to avoid state updates from other classes
+    private val _uiState = MutableStateFlow<List<Sport>>(emptyList())
+
+    // The UI collects from this StateFlow to get its state updates
+    val uiState: StateFlow<List<Sport>> = _uiState
 
     init {
-        sharedFlowInit()
+        // allow us to populate the composable initially
+        loadNewSports()
     }
 
-    fun sharedFlowInit() {
+    fun loadNewSports() {
         viewModelScope.launch {
-            for(i in 1..1000){
-                delay(1000)
-                // making the list random, so when I take first element of list it'll be a random Sport.
-                latestSport = sportRepository.getFeaturedSports().shuffled()
-                _sharedFlow.emit(latestSport)
-            }
+            val newSportList = sportRepository.getFeaturedSports().shuffled()
+            _uiState.value = newSportList
         }
     }
 

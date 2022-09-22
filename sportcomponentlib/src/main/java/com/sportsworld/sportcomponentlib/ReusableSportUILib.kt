@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.tooling.preview.Preview
-import com.sportsworld.sportcomponentlib.ui.theme.SportsComponentLib
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sportsworld.sportcomponentlib.ui.icons.RefreshIcon
+import com.sportsworld.sportcomponentlib.ui.theme.SportsComponentLib
 import kotlinx.coroutines.launch
 
 
@@ -40,13 +42,13 @@ fun RefreshButtonLib(viewModel: SportFeatureViewModelLib = viewModel()) {
             try {
 
                 // try and collect the value from the flow and then print it out
-                viewModel.loadNews()
+                viewModel.loadNewSports()
 
                 val listOfSports = viewModel.uiState.value
 
                 Log.d("katie", currentSport.name) // testing current sport is getting updated
                 // Don't want to display same sport twice in a row
-                if(currentSport == listOfSports[0])
+                if (currentSport == listOfSports[0])
                     currentSport = listOfSports[1]
                 else
                     currentSport = listOfSports[0]
@@ -57,8 +59,7 @@ fun RefreshButtonLib(viewModel: SportFeatureViewModelLib = viewModel()) {
         }
     }
 
-    RefreshIcon(onClick = getNewSportOnClick) {
-  }
+    RefreshIcon(onClick = getNewSportOnClick) {}
 }
 
 @Composable
@@ -67,32 +68,31 @@ fun MainScreen(viewModel: SportFeatureViewModelLib = viewModel()) {
 }
 
 @Composable
-fun AtNewUIstate(viewModel: SportFeatureViewModelLib = viewModel()){
-        val state = viewModel.uiState.collectAsState()
-        val stateValue = state.value
+fun AtNewUIstate(viewModel: SportFeatureViewModelLib = viewModel()) {
+    val state = viewModel.uiState.collectAsState()
+    val stateValue = state.value
 
-        if(stateValue.isEmpty()){
-           Text("New Sport Feature is Loading...")
+    if (stateValue.isEmpty()) {
+        Text("New Sport Feature is Loading...")
+    } else {
+        Column {
+            Text(
+                text = stateValue[0].name,
+                style = MaterialTheme.typography.h3,
+            )
+            Text(
+                text = stateValue[0].description,
+                style = MaterialTheme.typography.h5,
+            )
         }
-        else{
-            Column {
-                Text(
-                    text = stateValue[0].name,
-                    style = MaterialTheme.typography.h3,
-                )
-                Text(
-                    text = stateValue[0].description,
-                    style = MaterialTheme.typography.h5,
-                )
-            }
-        }
+    }
 }
 
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    SportsComponentLib() {
+    SportsComponentLib {
         val viewModel: SportFeatureViewModelLib = viewModel()
         MainScreen(viewModel)
     }

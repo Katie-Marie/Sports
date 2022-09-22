@@ -2,7 +2,6 @@ package com.sportsworld.sportcomponentlib
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
-import org.junit.After
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -25,10 +24,10 @@ class SportFeatureUnitTest {
 
     @Test
     fun `check list of sports has been randomised`() = runTest {
-        viewModel.loadNews()
+        viewModel.loadNewSports()
         val firstShuffle = viewModel.uiState.value
         advanceUntilIdle()
-        viewModel.loadNews()
+        viewModel.loadNewSports()
         val secondShuffle = viewModel.uiState
         advanceUntilIdle()
         assertNotEquals(firstShuffle, secondShuffle)
@@ -36,7 +35,7 @@ class SportFeatureUnitTest {
 
     @Test
     fun `check list gets populated with 9 objects after sharedFlowInit() called`() = runTest {
-        viewModel.loadNews()
+        viewModel.loadNewSports()
         advanceUntilIdle()
         val postShuffledListOfSports = viewModel.uiState.value
         assertEquals(postShuffledListOfSports.size, 9)
